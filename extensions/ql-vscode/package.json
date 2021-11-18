@@ -957,7 +957,7 @@
     "format-staged": "lint-staged"
   },
   "dependencies": {
-    "@octokit/rest": "^18.5.6",
+    "@octokit/rest": "^18.9.1",
     "child-process-promise": "^2.2.1",
     "classnames": "~2.2.6",
     "fs-extra": "^9.0.1",
