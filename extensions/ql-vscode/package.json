@@ -995,7 +995,7 @@
     "tmp": "^0.1.0",
     "tmp-promise": "~3.0.2",
     "tree-kill": "~1.2.2",
-    "unzipper": "~0.10.5",
+    "unzipper": "~0.12.1",
     "vscode-extension-telemetry": "^0.1.6",
     "vscode-jsonrpc": "^5.0.1",
     "vscode-languageclient": "^6.1.3",
