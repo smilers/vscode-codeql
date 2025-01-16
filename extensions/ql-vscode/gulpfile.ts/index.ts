@@ -1,15 +1,59 @@
-import * as gulp from 'gulp';
-import { compileTypeScript, watchTypeScript, copyViewCss } from './typescript';
-import { compileTextMateGrammar } from './textmate';
-import { copyTestData } from './tests';
-import { compileView } from './webpack';
-import { packageExtension } from './package';
-import { injectAppInsightsKey } from './appInsights';
+import { parallel, series } from "gulp";
+import {
+  compileEsbuild,
+  watchEsbuild,
+  checkTypeScript,
+  watchCheckTypeScript,
+  cleanOutput,
+  copyWasmFiles,
+} from "./typescript";
+import { compileTextMateGrammar } from "./textmate";
+import { packageExtension } from "./package";
+import { injectAppInsightsKey } from "./appInsights";
+import {
+  checkViewTypeScript,
+  compileViewEsbuild,
+  watchViewCheckTypeScript,
+  watchViewEsbuild,
+} from "./view";
 
-export const buildWithoutPackage =
-  gulp.parallel(
-    compileTypeScript, compileTextMateGrammar, compileView, copyTestData, copyViewCss
-  );
+export const buildWithoutPackage = series(
+  cleanOutput,
+  parallel(
+    compileEsbuild,
+    copyWasmFiles,
+    checkTypeScript,
+    compileTextMateGrammar,
+    compileViewEsbuild,
+    checkViewTypeScript,
+  ),
+);
 
-export { compileTextMateGrammar, watchTypeScript, compileTypeScript, copyTestData, injectAppInsightsKey };
-export default gulp.series(buildWithoutPackage, injectAppInsightsKey, packageExtension);
+export const watch = parallel(
+  // Always build first, so that we don't have to run build manually
+  compileEsbuild,
+  compileViewEsbuild,
+  watchEsbuild,
+  watchCheckTypeScript,
+  watchViewEsbuild,
+  watchViewCheckTypeScript,
+);
+
+export {
+  cleanOutput,
+  compileTextMateGrammar,
+  watchEsbuild,
+  watchCheckTypeScript,
+  watchViewEsbuild,
+  compileEsbuild,
+  copyWasmFiles,
+  checkTypeScript,
+  injectAppInsightsKey,
+  compileViewEsbuild,
+  checkViewTypeScript,
+};
+export default series(
+  buildWithoutPackage,
+  injectAppInsightsKey,
+  packageExtension,
+);

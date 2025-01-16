@@ -19,3 +19,10 @@ yarn.lock                    merge=binary
 # suggests that this might interleave lines arbitrarily, but empirically
 # it keeps added chunks contiguous
 CHANGELOG.md                merge=union
+
+# Mark some JSON files containing test data as generated so they are not included
+# as part of diffs or language statistics.
+extensions/ql-vscode/src/stories/variant-analysis/data/*.json     linguist-generated
+
+# Always use LF line endings, also on Windows
+* text=auto eol=lf

@@ -4,8 +4,11 @@
   // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
     "amodio.tsl-problem-matcher",
+    "DavidAnson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
-    "eternalphane.tsfmt-vscode"
+    "esbenp.prettier-vscode",
+    "firsttris.vscode-jest-runner",
+    "Orta.vscode-jest",
   ],
   // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
   "unwantedRecommendations": []

@@ -1,5 +1,0 @@
-name: github/remote-query-pack
-version: 0.0.0
-extractor: javascript
-dependencies:
-  codeql/javascript-all: '*'

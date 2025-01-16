@@ -1,8 +1,10 @@
 {
-  "include": [
-    "**/*.ts"
-  ],
+  "extends": "../tsconfig.json",
+  "include": ["**/*.ts", "../src/**/*.ts", "**/.eslintrc.js", "**/*.config.js"],
+  "exclude": ["../src/view/**/*.ts"],
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "rootDir": ".."
   }
 }

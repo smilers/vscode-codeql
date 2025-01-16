@@ -1,138 +1,104 @@
-import { env } from 'vscode';
+import type { CancellationTokenSource } from "vscode";
+import { env } from "vscode";
 
-import { QueryWithResults, tmpDir, QueryInfo } from './run-queries';
-import * as messages from './pure/messages';
-import * as cli from './cli';
-import * as sarif from 'sarif';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { RawResultsSortState, SortedResultSetInfo, DatabaseInfo, QueryMetadata, InterpretedResultsSortState, ResultsPaths } from './pure/interface-types';
-import { QueryHistoryConfig } from './config';
-import { QueryHistoryItemOptions } from './query-history';
+import type { Position } from "./query-server/messages-shared";
+import type { CodeQLCliServer, SourceInfo } from "./codeql-cli/cli";
+import { pathExists } from "fs-extra";
+import { basename } from "path";
+import type {
+  RawResultsSortState,
+  SortedResultSetInfo,
+  QueryMetadata,
+  InterpretedResultsSortState,
+  ResultsPaths,
+  SarifInterpretationData,
+  GraphInterpretationData,
+  DatabaseInfo,
+} from "./common/interface-types";
+import { QueryStatus } from "./query-history/query-status";
+import type {
+  EvaluatorLogPaths,
+  QueryEvaluationInfo,
+  QueryWithResults,
+} from "./run-queries-shared";
+import type { QueryOutputDir } from "./local-queries/query-output-dir";
+import { sarifParser } from "./common/sarif-parser";
 
-export class CompletedQuery implements QueryWithResults {
-  readonly date: Date;
-  readonly time: string;
-  readonly query: QueryInfo;
-  readonly result: messages.EvaluationResult;
-  readonly database: DatabaseInfo;
-  readonly logFileLocation?: string;
-  options: QueryHistoryItemOptions;
-  resultCount: number;
-  dispose: () => void;
+/**
+ * query-results.ts
+ * ----------------
+ *
+ * A collection of classes and functions that collectively
+ * manage query results.
+ */
 
-  /**
-   * Map from result set name to SortedResultSetInfo.
-   */
-  sortedResultsInfo: Map<string, SortedResultSetInfo>;
+/**
+ * A description of the information about a query
+ * that is available before results are populated.
+ */
+export interface InitialQueryInfo {
+  userSpecifiedLabel?: string; // if missing, use a default label
+  readonly queryText: string; // text of the selected file, or the selected text when doing quick eval
+  readonly isQuickQuery: boolean;
+  readonly isQuickEval: boolean;
+  readonly isQuickEvalCount?: boolean; // Missing is false for backwards compatibility
+  readonly quickEvalPosition?: Position;
+  readonly queryPath: string;
+  readonly databaseInfo: DatabaseInfo;
+  readonly start: Date;
+  readonly id: string; // unique id for this query.
+  readonly outputDir?: QueryOutputDir; // If missing, we do not have a query save dir. The query may have been cancelled. This is only for backwards compatibility.
+}
 
-  /**
-   * How we're currently sorting alerts. This is not mere interface
-   * state due to truncation; on re-sort, we want to read in the file
-   * again, sort it, and only ship off a reasonable number of results
-   * to the webview. Undefined means to use whatever order is in the
-   * sarif file.
-   */
-  interpretedResultsSortState: InterpretedResultsSortState | undefined;
-
+export class CompletedQueryInfo implements QueryWithResults {
   constructor(
-    evaluation: QueryWithResults,
-    public config: QueryHistoryConfig,
-  ) {
-    this.query = evaluation.query;
-    this.result = evaluation.result;
-    this.database = evaluation.database;
-    this.logFileLocation = evaluation.logFileLocation;
-    this.options = evaluation.options;
-    this.dispose = evaluation.dispose;
+    public readonly query: QueryEvaluationInfo,
+    public readonly logFileLocation: string | undefined,
+    public readonly successful: boolean,
+    public readonly message: string,
+    /**
+     * How we're currently sorting alerts. This is not mere interface
+     * state due to truncation; on re-sort, we want to read in the file
+     * again, sort it, and only ship off a reasonable number of results
+     * to the webview. Undefined means to use whatever order is in the
+     * sarif file.
+     */
+    public interpretedResultsSortState: InterpretedResultsSortState | undefined,
+    public resultCount: number = 0,
 
-    this.date = new Date();
-    this.time = this.date.toLocaleString(env.language);
-    this.sortedResultsInfo = new Map();
-    this.resultCount = 0;
-  }
+    /**
+     * Map from result set name to SortedResultSetInfo.
+     */
+    public sortedResultsInfo: Record<string, SortedResultSetInfo> = {},
+  ) {}
 
   setResultCount(value: number) {
     this.resultCount = value;
-  }
-
-  get databaseName(): string {
-    return this.database.name;
-  }
-  get queryName(): string {
-    return getQueryName(this.query);
-  }
-  get queryFileName(): string {
-    return getQueryFileName(this.query);
-  }
-
-  get statusString(): string {
-    switch (this.result.resultType) {
-      case messages.QueryResultType.CANCELLATION:
-        return `cancelled after ${this.result.evaluationTime / 1000} seconds`;
-      case messages.QueryResultType.OOM:
-        return 'out of memory';
-      case messages.QueryResultType.SUCCESS:
-        return `finished in ${this.result.evaluationTime / 1000} seconds`;
-      case messages.QueryResultType.TIMEOUT:
-        return `timed out after ${this.result.evaluationTime / 1000} seconds`;
-      case messages.QueryResultType.OTHER_ERROR:
-      default:
-        return this.result.message ? `failed: ${this.result.message}` : 'failed';
-    }
   }
 
   getResultsPath(selectedTable: string, useSorted = true): string {
     if (!useSorted) {
       return this.query.resultsPaths.resultsPath;
     }
-    return this.sortedResultsInfo.get(selectedTable)?.resultsPath
-      || this.query.resultsPaths.resultsPath;
-  }
-
-  interpolate(template: string): string {
-    const { databaseName, queryName, time, resultCount, statusString, queryFileName } = this;
-    const replacements: { [k: string]: string } = {
-      t: time,
-      q: queryName,
-      d: databaseName,
-      r: resultCount.toString(),
-      s: statusString,
-      f: queryFileName,
-      '%': '%',
-    };
-    return template.replace(/%(.)/g, (match, key) => {
-      const replacement = replacements[key];
-      return replacement !== undefined ? replacement : match;
-    });
-  }
-
-  getLabel(): string {
-    return this.options?.label
-      || this.config.format;
-  }
-
-  get didRunSuccessfully(): boolean {
-    return this.result.resultType === messages.QueryResultType.SUCCESS;
-  }
-
-  toString(): string {
-    return this.interpolate(this.getLabel());
+    return (
+      this.sortedResultsInfo[selectedTable]?.resultsPath ||
+      this.query.resultsPaths.resultsPath
+    );
   }
 
   async updateSortState(
-    server: cli.CodeQLCliServer,
+    server: CodeQLCliServer,
     resultSetName: string,
-    sortState?: RawResultsSortState
+    sortState?: RawResultsSortState,
   ): Promise<void> {
     if (sortState === undefined) {
-      this.sortedResultsInfo.delete(resultSetName);
+      delete this.sortedResultsInfo[resultSetName];
       return;
     }
 
     const sortedResultSetInfo: SortedResultSetInfo = {
-      resultsPath: path.join(tmpDir.name, `sortedResults${this.query.queryID}-${resultSetName}.bqrs`),
-      sortState
+      resultsPath: this.query.getSortedResultSetPath(resultSetName),
+      sortState,
     };
 
     await server.sortBqrs(
@@ -140,74 +106,199 @@ export class CompletedQuery implements QueryWithResults {
       sortedResultSetInfo.resultsPath,
       resultSetName,
       [sortState.columnIndex],
-      [sortState.sortDirection]
+      [sortState.sortDirection],
     );
-    this.sortedResultsInfo.set(resultSetName, sortedResultSetInfo);
+    this.sortedResultsInfo[resultSetName] = sortedResultSetInfo;
   }
 
-  async updateInterpretedSortState(sortState?: InterpretedResultsSortState): Promise<void> {
+  async updateInterpretedSortState(
+    sortState?: InterpretedResultsSortState,
+  ): Promise<void> {
     this.interpretedResultsSortState = sortState;
   }
 }
 
-
 /**
- * Gets a human-readable name for an evaluated query.
- * Uses metadata if it exists, and defaults to the query file name.
+ * Call cli command to interpret SARIF results.
  */
-export function getQueryName(query: QueryInfo) {
-  if (query.quickEvalPosition !== undefined) {
-    return 'Quick evaluation of ' + getQueryFileName(query);
-  } else if (query.metadata?.name) {
-    return query.metadata.name;
-  } else {
-    return getQueryFileName(query);
-  }
-}
-
-/**
- * Gets the file name for an evaluated query.
- * Defaults to the query file name and may contain position information for quick eval queries.
- */
-export function getQueryFileName(query: QueryInfo) {
-  // Queries run through quick evaluation are not usually the entire query file.
-  // Label them differently and include the line numbers.
-  if (query.quickEvalPosition !== undefined) {
-    const { line, endLine, fileName } = query.quickEvalPosition;
-    const lineInfo = line === endLine ? `${line}` : `${line}-${endLine}`;
-    return `${path.basename(fileName)}:${lineInfo}`;
-  }
-  return path.basename(query.program.queryPath);
-}
-
-
-/**
- * Call cli command to interpret results.
- */
-export async function interpretResults(
-  server: cli.CodeQLCliServer,
+export async function interpretResultsSarif(
+  cli: CodeQLCliServer,
   metadata: QueryMetadata | undefined,
   resultsPaths: ResultsPaths,
-  sourceInfo?: cli.SourceInfo
-): Promise<sarif.Log> {
+  sourceInfo?: SourceInfo,
+  args?: string[],
+): Promise<SarifInterpretationData> {
   const { resultsPath, interpretedResultsPath } = resultsPaths;
-  if (await fs.pathExists(interpretedResultsPath)) {
-    return JSON.parse(await fs.readFile(interpretedResultsPath, 'utf8'));
+  let res;
+  if (await pathExists(interpretedResultsPath)) {
+    res = await sarifParser(interpretedResultsPath);
+  } else {
+    res = await cli.interpretBqrsSarif(
+      ensureMetadataIsComplete(metadata),
+      resultsPath,
+      interpretedResultsPath,
+      sourceInfo,
+      args,
+    );
   }
-  return await server.interpretBqrs(ensureMetadataIsComplete(metadata), resultsPath, interpretedResultsPath, sourceInfo);
+  return { ...res, t: "SarifInterpretationData" };
+}
+
+/**
+ * Call cli command to interpret graph results.
+ */
+export async function interpretGraphResults(
+  cliServer: CodeQLCliServer,
+  metadata: QueryMetadata | undefined,
+  resultsPaths: ResultsPaths,
+  sourceInfo?: SourceInfo,
+): Promise<GraphInterpretationData> {
+  const { resultsPath, interpretedResultsPath } = resultsPaths;
+  if (await pathExists(interpretedResultsPath)) {
+    const dot = await cliServer.readDotFiles(interpretedResultsPath);
+    return { dot, t: "GraphInterpretationData" };
+  }
+
+  const dot = await cliServer.interpretBqrsGraph(
+    ensureMetadataIsComplete(metadata),
+    resultsPath,
+    interpretedResultsPath,
+    sourceInfo,
+  );
+  return { dot, t: "GraphInterpretationData" };
 }
 
 export function ensureMetadataIsComplete(metadata: QueryMetadata | undefined) {
   if (metadata === undefined) {
-    throw new Error('Can\'t interpret results without query metadata');
+    throw new Error("Can't interpret results without query metadata");
   }
   if (metadata.kind === undefined) {
-    throw new Error('Can\'t interpret results without query metadata including kind');
+    throw new Error(
+      "Can't interpret results without query metadata including kind",
+    );
   }
   if (metadata.id === undefined) {
     // Interpretation per se doesn't really require an id, but the
     // SARIF format does, so in the absence of one, we use a dummy id.
-    metadata.id = 'dummy-id';
+    metadata.id = "dummy-id";
   }
   return metadata;
+}
+
+/**
+ * Used in Interface and Compare-Interface for queries that we know have been completed.
+ */
+export type CompletedLocalQueryInfo = LocalQueryInfo & {
+  completedQuery: CompletedQueryInfo;
+};
+
+export class LocalQueryInfo {
+  readonly t = "local";
+
+  constructor(
+    public readonly initialInfo: InitialQueryInfo,
+    private cancellationSource?: CancellationTokenSource, // used to cancel in progress queries
+    public failureReason?: string,
+    public completedQuery?: CompletedQueryInfo,
+    public evaluatorLogPaths?: EvaluatorLogPaths,
+  ) {
+    /**/
+  }
+
+  cancel() {
+    this.cancellationSource?.cancel();
+    // query is no longer in progress, can delete the cancellation token source
+    this.cancellationSource?.dispose();
+    delete this.cancellationSource;
+  }
+
+  get startTime() {
+    return this.initialInfo.start.toLocaleString(env.language);
+  }
+
+  get userSpecifiedLabel() {
+    return this.initialInfo.userSpecifiedLabel;
+  }
+
+  set userSpecifiedLabel(label: string | undefined) {
+    this.initialInfo.userSpecifiedLabel = label;
+  }
+
+  /** Sets the paths to the various structured evaluator logs. */
+  public setEvaluatorLogPaths(logPaths: EvaluatorLogPaths): void {
+    this.evaluatorLogPaths = logPaths;
+  }
+
+  /**
+   * The query's file name, unless it is a quick eval.
+   * Queries run through quick evaluation are not usually the entire query file.
+   * Label them differently and include the line numbers.
+   */
+  getQueryFileName() {
+    if (this.initialInfo.quickEvalPosition) {
+      const { line, endLine, fileName } = this.initialInfo.quickEvalPosition;
+      const lineInfo = line === endLine ? `${line}` : `${line}-${endLine}`;
+      return `${basename(fileName)}:${lineInfo}`;
+    }
+    return basename(this.initialInfo.queryPath);
+  }
+
+  /**
+   * Three cases:
+   *
+   * - If this is a completed query, use the query name from the query metadata.
+   * - If this is a quick eval, return the query name with a prefix
+   * - Otherwise, return the query file name.
+   */
+  getQueryName() {
+    if (this.initialInfo.isQuickEvalCount) {
+      return `Quick evaluation counts of ${this.getQueryFileName()}`;
+    } else if (this.initialInfo.isQuickEval) {
+      return `Quick evaluation of ${this.getQueryFileName()}`;
+    } else if (this.completedQuery?.query.metadata?.name) {
+      return this.completedQuery?.query.metadata?.name;
+    } else {
+      return this.getQueryFileName();
+    }
+  }
+
+  get completed(): boolean {
+    return !!this.completedQuery;
+  }
+
+  completeThisQuery(info: QueryWithResults): void {
+    this.completedQuery = new CompletedQueryInfo(
+      info.query,
+      info.query.logPath,
+      info.successful,
+      info.message,
+      undefined,
+    );
+
+    // dispose of the cancellation token source and also ensure the source is not serialized as JSON
+    this.cancellationSource?.dispose();
+    delete this.cancellationSource;
+  }
+
+  /**
+   * If there is a failure reason, then this query has failed.
+   * If there is no completed query, then this query is still running.
+   * If there is a completed query, then check if didRunSuccessfully.
+   * If true, then this query has completed successfully, otherwise it has failed.
+   */
+  get status(): QueryStatus {
+    if (this.failureReason) {
+      return QueryStatus.Failed;
+    } else if (!this.completedQuery) {
+      return QueryStatus.InProgress;
+    } else if (this.completedQuery.successful) {
+      return QueryStatus.Completed;
+    } else {
+      return QueryStatus.Failed;
+    }
+  }
+
+  get databaseName() {
+    return this.initialInfo.databaseInfo.name;
+  }
 }

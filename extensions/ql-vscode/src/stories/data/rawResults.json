@@ -1,0 +1,22 @@
+{
+  "resultSet": {
+    "name": "#select",
+    "totalRowCount": 1,
+    "columns": [
+      {
+        "kind": "integer"
+      }
+    ],
+    "rows": [
+      [
+        {
+          "type": "number",
+          "value": 60688
+        }
+      ]
+    ]
+  },
+  "fileLinkPrefix": "https://github.com/facebook/create-react-app/blob/d960b9e38c062584ff6cfb1a70e1512509a966e7",
+  "sourceLocationPrefix": "/home/runner/work/bulk-builder/bulk-builder",
+  "capped": false
+}

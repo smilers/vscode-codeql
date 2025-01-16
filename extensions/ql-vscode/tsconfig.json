@@ -4,12 +4,13 @@
     "declaration": true,
     "strict": true,
     "module": "commonjs",
-    "target": "es2017",
+    "target": "es2021",
     "outDir": "out",
-    "lib": ["ES2020"],
+    "lib": ["ES2021"],
     "moduleResolution": "node",
     "sourceMap": true,
     "rootDir": "src",
+    "skipLibCheck": true,
     "strictNullChecks": true,
     "noFallthroughCasesInSwitch": true,
     "preserveWatchOutput": true,
@@ -17,8 +18,11 @@
     "noImplicitReturns": true,
     "experimentalDecorators": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "noEmit": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "test", "**/view"]
+  "exclude": ["node_modules", "*.config.ts", "test", "**/view"]
 }

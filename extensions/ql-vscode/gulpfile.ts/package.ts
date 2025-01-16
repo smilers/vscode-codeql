@@ -1,23 +1,37 @@
-import * as path from 'path';
-import { deployPackage } from './deploy';
-import * as childProcess from 'child-process-promise';
+import { resolve } from "path";
+import { deployPackage } from "./deploy";
+import { spawn } from "cross-spawn";
 
 export async function packageExtension(): Promise<void> {
-  const deployedPackage = await deployPackage(path.resolve('package.json'));
-  console.log(`Packaging extension '${deployedPackage.name}@${deployedPackage.version}'...`);
+  const deployedPackage = await deployPackage();
+  console.log(
+    `Packaging extension '${deployedPackage.name}@${deployedPackage.version}'...`,
+  );
   const args = [
-    'package',
-    '--out', path.resolve(deployedPackage.distPath, '..', `${deployedPackage.name}-${deployedPackage.version}.vsix`)
+    "package",
+    "--out",
+    resolve(
+      deployedPackage.distPath,
+      "..",
+      `${deployedPackage.name}-${deployedPackage.version}.vsix`,
+    ),
+    "--no-dependencies",
+    "--skip-license",
   ];
-  const proc = childProcess.spawn('./node_modules/.bin/vsce', args, {
-    cwd: deployedPackage.distPath
-  });
-  proc.childProcess.stdout!.on('data', (data) => {
-    console.log(data.toString());
-  });
-  proc.childProcess.stderr!.on('data', (data) => {
-    console.error(data.toString());
+  const proc = spawn(resolve(__dirname, "../node_modules/.bin/vsce"), args, {
+    cwd: deployedPackage.distPath,
+    stdio: ["ignore", "inherit", "inherit"],
   });
 
-  await proc;
+  await new Promise((resolve, reject) => {
+    proc.on("error", reject);
+
+    proc.on("close", (code) => {
+      if (code === 0) {
+        resolve(undefined);
+      } else {
+        reject(new Error(`Failed to package extension with code ${code}`));
+      }
+    });
+  });
 }

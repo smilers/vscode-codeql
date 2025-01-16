@@ -1,0 +1,11 @@
+{
+  "request": {
+    "kind": "submitVariantAnalysis"
+  },
+  "response": {
+    "status": 422,
+    "body": {
+      "message": "Unable to trigger a variant analysis. None of the requested repositories could be found."
+    }
+  }
+}

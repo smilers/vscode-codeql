@@ -1,0 +1,547 @@
+[
+  {
+    "repository": {
+      "id": 143040428,
+      "fullName": "github/codeql",
+      "private": false,
+      "stargazersCount": 5703,
+      "updatedAt": "2023-02-15T10:11:45Z"
+    },
+    "analysisStatus": "succeeded",
+    "resultCount": 22,
+    "artifactSizeInBytes": 3567,
+    "interpretedResults": [],
+    "rawResults": {
+      "resultSet": {
+        "name": "#select",
+        "totalRowCount": 22,
+        "columns": [
+          {
+            "name": "c",
+            "kind": "entity"
+          },
+          {
+            "kind": "integer"
+          }
+        ],
+        "rows": [
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... ght);\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/src/Expressions/examples/CompareIdenticalValues.js",
+                  "startLine": 8,
+                  "startColumn": 32,
+                  "endLine": 13,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 6
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... i-1);\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/src/LanguageFeatures/examples/ArgumentsCallerCallee.js",
+                  "startLine": 1,
+                  "startColumn": 2,
+                  "endLine": 5,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 5
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... i-1);\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/src/LanguageFeatures/examples/ArgumentsCallerCalleeGood.js",
+                  "startLine": 1,
+                  "startColumn": 2,
+                  "endLine": 5,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 5
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... n -1;\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/src/Statements/examples/UselessComparisonTest.js",
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 12,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 12
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... false\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/constants.js",
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 8,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 8
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ...  \\n  }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/loop.js",
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 12,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 12
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... e\\n  }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/loop.js",
+                  "startLine": 14,
+                  "startColumn": 1,
+                  "endLine": 22,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 9
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... K\\n  }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/loop.js",
+                  "startLine": 24,
+                  "startColumn": 1,
+                  "endLine": 40,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 17
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... e\\n  }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/plus.js",
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 17,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 17
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... alse \\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/plus.js",
+                  "startLine": 19,
+                  "startColumn": 1,
+                  "endLine": 28,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 10
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ...  true\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/plus.js",
+                  "startLine": 30,
+                  "startColumn": 1,
+                  "endLine": 33,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 4
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... K\\n  }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/tst.js",
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 15,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 15
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... e\\n  }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/tst.js",
+                  "startLine": 17,
+                  "startColumn": 1,
+                  "endLine": 31,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 15
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... false\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/tst.js",
+                  "startLine": 33,
+                  "startColumn": 1,
+                  "endLine": 41,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 9
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... e\\n  }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/library-tests/RangeAnalysis/tst.js",
+                  "startLine": 43,
+                  "startColumn": 1,
+                  "endLine": 52,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 10
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... ght);\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/query-tests/Expressions/CompareIdenticalValues/tst.js",
+                  "startLine": 8,
+                  "startColumn": 32,
+                  "endLine": 13,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 6
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... i-1);\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/query-tests/LanguageFeatures/ArgumentsCallerCallee/tst.js",
+                  "startLine": 1,
+                  "startColumn": 2,
+                  "endLine": 5,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 5
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ...     }\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/query-tests/Security/CWE-834/LoopBoundInjectionExitBad.js",
+                  "startLine": 17,
+                  "startColumn": 1,
+                  "endLine": 29,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 13
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ...  true\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/query-tests/Statements/UselessComparisonTest/constant.js",
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 4,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 4
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... n -1;\\n}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/query-tests/Statements/UselessComparisonTest/example.js",
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 12,
+                  "endColumn": 1
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 12
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... turn; }",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/query-tests/Statements/UselessComparisonTest/tst.js",
+                  "startLine": 8,
+                  "startColumn": 3,
+                  "endLine": 8,
+                  "endColumn": 43
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 1
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "| functio ... i+1); |}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/javascript/ql/test/query-tests/Statements/UselessComparisonTest/tst.js",
+                  "startLine": 9,
+                  "startColumn": 3,
+                  "endLine": 9,
+                  "endColumn": 52
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 1
+            }
+          ]
+        ]
+      },
+      "fileLinkPrefix": "https://github.com/github/codeql/blob/cbdd4927cee593b715d8469240ce1d31edaaef9b",
+      "capped": false
+    }
+  },
+  {
+    "repository": {
+      "id": 3214406,
+      "fullName": "meteor/meteor",
+      "private": false,
+      "stargazersCount": 43274,
+      "updatedAt": "2023-02-14T21:06:55Z"
+    },
+    "analysisStatus": "succeeded",
+    "resultCount": 2,
+    "artifactSizeInBytes": 1133,
+    "interpretedResults": [],
+    "rawResults": {
+      "resultSet": {
+        "name": "#select",
+        "totalRowCount": 2,
+        "columns": [
+          {
+            "name": "c",
+            "kind": "entity"
+          },
+          {
+            "kind": "integer"
+          }
+        ],
+        "rows": [
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... rn H|0}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/packages/logic-solver/minisat.js",
+                  "startLine": 7,
+                  "startColumn": 91430,
+                  "endLine": 7,
+                  "endColumn": 105027
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 1
+            }
+          ],
+          [
+            {
+              "type": "entity",
+              "value": {
+                "label": "functio ... ext;\\n\\t}",
+                "url": {
+                  "type": "lineColumnLocation",
+                  "uri": "file:/home/runner/work/bulk-builder/bulk-builder/packages/sha/sha256.js",
+                  "startLine": 94,
+                  "startColumn": 2,
+                  "endLine": 124,
+                  "endColumn": 2
+                }
+              }
+            },
+            {
+              "type": "number",
+              "value": 31
+            }
+          ]
+        ]
+      },
+      "fileLinkPrefix": "https://github.com/meteor/meteor/blob/53f3c4442d3542d3d2a012a854472a0d1bef9d12",
+      "sourceLocationPrefix": "/home/runner/work/bulk-builder/bulk-builder",
+      "capped": false
+    }
+  }
+]
